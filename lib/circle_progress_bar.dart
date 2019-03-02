@@ -10,6 +10,8 @@ num degToRad(num deg) => deg * (pi / 180.0);
 
 num radToDeg(num rad) => rad * (180.0 / pi);
 
+
+
 class CircleProgressBar extends StatefulWidget {
   final double radius;
   final double progress;
@@ -19,6 +21,8 @@ class CircleProgressBar extends StatefulWidget {
   final Color dotColor;
   final Color dotEdgeColor;
   final Color ringColor;
+
+
 
   final ProgressChanged progressChanged;
 
@@ -37,11 +41,13 @@ class CircleProgressBar extends StatefulWidget {
 
   @override
   State<StatefulWidget> createState() => _CircleProgressState();
+
+
 }
 
 
 class _CircleProgressState extends State<CircleProgressBar>
-    with SingleTickerProviderStateMixin {
+    with SingleTickerProviderStateMixin{
   AnimationController progressController;
   bool isValidTouch = false;
   final GlobalKey paintKey = GlobalKey();
@@ -52,11 +58,10 @@ class _CircleProgressState extends State<CircleProgressBar>
     progressController =
         AnimationController(duration: Duration(milliseconds: 300), vsync: this);
     if (widget.progress != null) progressController.value = widget.progress;
+    print("$widget+------init");
     progressController.addListener(() {
       if (widget.progressChanged != null)
         widget.progressChanged(progressController.value);
-      double temp=progressController.value;
-      print('Progress on init State:------$temp');
       setState(() {});
     });
   }
@@ -71,11 +76,13 @@ class _CircleProgressState extends State<CircleProgressBar>
   Widget build(BuildContext context) {
     final double width = widget.radius * 2.0;
     final size = new Size(width, width);
+    //progressController.value=widget.progress;
+    print('oncircleBuild-----------${progressController.value}------------${widget.progress}');
     return GestureDetector(
       onPanStart: _onPanStart,
       onPanUpdate: _onPanUpdate,
       onPanEnd: _onPanEnd,
-      onTapDown: _onTapDown,
+      onTapUp: _onTapUp,
       child: Container(
         alignment: FractionalOffset.center,
         child: CustomPaint(
@@ -88,13 +95,17 @@ class _CircleProgressState extends State<CircleProgressBar>
               ringColor: widget.ringColor,
               dotColor: widget.dotColor,
               dotEdgeColor: widget.dotEdgeColor,
-              progress: progressController.value),
+              //progress: progressController.value),
+              progress: widget.progress
+          ),
         ),
       ),
     );
   }
 
+
   void _onPanStart(DragStartDetails details) {
+    print('---------onPanStart');
     RenderBox getBox = paintKey.currentContext.findRenderObject();
     Offset local = getBox.globalToLocal(details.globalPosition);
     //print("输出Local：$local----------_onPanStart()");
@@ -108,38 +119,52 @@ class _CircleProgressState extends State<CircleProgressBar>
     if (!isValidTouch) {
       return;
     }
+    print("------onPanUpDate------");
     RenderBox getBox = paintKey.currentContext.findRenderObject();
     Offset local = getBox.globalToLocal(details.globalPosition);
     final double x = local.dx;
     final double y = local.dy;
     final double center = widget.radius;
-    //print("输出center ：$center");
-    double radians = atan((x - center) / (center - y));
-    if (y > center) {
-      radians = radians + degToRad(180.0);
-      //print("radians的值为：$radians============180");
-    } else if (x < center) {
-      radians = radians + degToRad(360.0);
-      //print("radians的值为：$radians============360");
+
+    if((x<center)&&(y<center))
+    {
+      double radians =atan((center-y)/(center-x))+degToRad(60);
+      progressController.value = radians / degToRad(300.0);
     }
-    progressController.value = radians / degToRad(360.0);
-    double temp=progressController.value;
-    //print("Progress on PanUpDate:----------$temp");
+    if((x>center)&&(y<center)){
+      double radians =atan((x-center)/(center-y))+degToRad(150);
+      progressController.value=radians/degToRad(300);
+    }
+    if((x>center)&&(y>center)){
+      double radians = atan((y-center)/(x-center))+degToRad(240);
+      progressController.value=radians/degToRad(300);
+      double a=radToDeg(radians);
+    }
+    if((x<center)&&(y>center)){
+      double radians=degToRad(60)-atan((y-center)/(center-x));
+      double a=radToDeg(radians);
+      progressController.value=radians / degToRad(300);
+    }
   }
 
   void _onPanEnd(DragEndDetails details) {
     if (!isValidTouch) {
       return;
     }
+    print("onPanEnd--------");
   }
 
 
-  void _onTapDown(TapDownDetails details) {
+  void _onTapUp(TapUpDetails details){
+    print('----------onTapUp----------');
+
+
+    RenderBox getBox = paintKey.currentContext.findRenderObject();
+    Offset local = getBox.globalToLocal(details.globalPosition);
+    isValidTouch=_checkValidTouch(local);
     if (!isValidTouch) {
       return;
     }
-    RenderBox getBox = paintKey.currentContext.findRenderObject();
-    Offset local = getBox.globalToLocal(details.globalPosition);
     final double x = local.dx;
     final double y = local.dy;
     final double center = widget.radius;
@@ -149,54 +174,25 @@ class _CircleProgressState extends State<CircleProgressBar>
       {
         double radians =atan((center-y)/(center-x))+degToRad(60);
         progressController.value = radians / degToRad(300.0);
-        double a=radToDeg(radians);
-        double temp=progressController.value;
-        //print("第2象限------$radians----$temp-----$a");
       }
       if((x>center)&&(y<center)){
       double radians =atan((x-center)/(center-y))+degToRad(150);
       progressController.value=radians/degToRad(300);
-      double a=radToDeg(radians);
-      double temp=progressController.value;
-      //print("第1象限------$radians----$temp-----$a");
       }
       if((x>center)&&(y>center)){
       double radians = atan((y-center)/(x-center))+degToRad(240);
       progressController.value=radians/degToRad(300);
       double a=radToDeg(radians);
-      double temp=progressController.value;
-      //print("第4象限------$radians----$temp---$a");
       }
       if((x<center)&&(y>center)){
-
-          double radians=degToRad(60)-acos((center-x)/center);
-          double a=radToDeg(radians);
-      //double radians= atan ( (y-center) / (center-x) );
+      double radians=degToRad(60)-atan((y-center)/(center-x));
       progressController.value=radians / degToRad(300);
-      double temp=progressController.value;
-      //print("第3象限------$radians----$temp----$x----$y--------$a");
       }
-
-
-    /*double radians = atan((x - center) / (center - y));
-    print('x>center  y<center===================$radians');
-
-    if (y > center) {
-      radians = radians + degToRad(180.0)+0.5*pi;
-      print('y > center ===================$radians');
-      //print("radians的值为：$radians============180");
-    } else if (x < center) {
-      radians = radians + degToRad(360.0)+0.5*pi;
-      print('x < center ===================$radians');
-      //print("radians的值为：$radians============360");
-    }
-    */
-
-
-
-    //double temp=progressController.value;
-    //print("Progress on TapDown:----------$temp");
   }
+
+
+
+
 
 
   bool _checkValidTouch(Offset pointer) {
@@ -211,8 +207,6 @@ class _CircleProgressState extends State<CircleProgressBar>
   }
   return true;
 }
-
-
 
 }
 
@@ -243,18 +237,6 @@ class ProgressPainter extends CustomPainter {
 
     //print("输出size :($size)");
 
-   /* final Gradient gradient = new SweepGradient(
-      startAngle: 30,
-      endAngle: 330,
-      colors: [Colors.blue,Colors.red],
-    );
-    final progressPaint2 = Paint()
-      ..style = PaintingStyle.stroke
-      ..strokeCap = StrokeCap.round
-      ..strokeWidth =2
-      ..shader = ;
-*/
-
 
 
     final progressPaint = Paint()
@@ -268,7 +250,6 @@ class ProgressPainter extends CustomPainter {
       double lineStartY = size.width / 2 + size.width / 2 * cos(a);
       double lineStopX = lineStartX + 20 * sin(a);
       double lineStopY = lineStartY - 20 * cos(a);
-      //print("$lineStartX+$lineStartY+$lineStopX+$lineStopY");
 
       temp += 1;
       progressPaint.color = Color.fromARGB(255, (255~/48*temp), 0, (255 - 255 ~/ 48 * temp));
@@ -278,7 +259,7 @@ class ProgressPainter extends CustomPainter {
       }
 
       canvas.drawLine(new Offset(lineStartX, lineStartY), new Offset(lineStopX, lineStopY), progressPaint);
-      print("$temp-----");
+      //print("$temp-----");
 
       /*
       double sweep2=(sweep1+30)/180*pi;
@@ -374,6 +355,7 @@ class ProgressPainter extends CustomPainter {
 //          ..strokeWidth = 1.0
 //          ..color = Colors.black);  // 测试基准线
 */
+
   }
 
   @override
@@ -381,4 +363,8 @@ class ProgressPainter extends CustomPainter {
     return true;
   }
 
+
+  void update(){
+
+  }
 }
