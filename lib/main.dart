@@ -39,11 +39,11 @@ class ProgressBarState extends State<ProgressBarPage>{
 
 
   void _iconButtonPressRediusTemperature(){//减少温度
-    print('button1 pressed111-----$progress');
+
     if(progress<=1)
       progress -=1/48;
     setState(() {
-      print('button1 pressed222-----$progress');
+
     });
 
   }

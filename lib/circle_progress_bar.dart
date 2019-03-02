@@ -77,7 +77,6 @@ class _CircleProgressState extends State<CircleProgressBar>
     final double width = widget.radius * 2.0;
     final size = new Size(width, width);
     //progressController.value=widget.progress;
-    print('oncircleBuild-----------${progressController.value}------------${widget.progress}');
     return GestureDetector(
       onPanStart: _onPanStart,
       onPanUpdate: _onPanUpdate,
