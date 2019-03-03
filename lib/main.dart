@@ -51,7 +51,6 @@ class ProgressBarState extends State<ProgressBarPage>{
     if(progress<=1)
       progress +=1/48;
     setState(() {
-
     });
       //this.progressChanged(progress);
     print('button2 pressed-----');
