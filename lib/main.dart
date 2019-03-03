@@ -40,7 +40,7 @@ class ProgressBarState extends State<ProgressBarPage>{
 
   void _iconButtonPressRediusTemperature(){//减少温度
 
-    if(progress<=1)
+    if(progress >= 1 / 48)
       progress -=1/48;
     setState(() {
 
@@ -48,7 +48,7 @@ class ProgressBarState extends State<ProgressBarPage>{
 
   }
   void _iconButtonPressAddTemperature(){//增加温度
-    if(progress<=1)
+    if(progress <= 1)
       progress +=1/48;
     setState(() {
     });
