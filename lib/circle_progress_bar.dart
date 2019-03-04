@@ -167,25 +167,38 @@ class _CircleProgressState extends State<CircleProgressBar>
     final double x = local.dx;
     final double y = local.dy;
     final double center = widget.radius;
+    var   temp;
+    int temp1;
     //print("输出center ：$center");
 
     if((x<center)&&(y<center))
       {
         double radians =atan((center-y)/(center-x))+degToRad(60);
-        progressController.value = radians / degToRad(300.0);
+        temp = radians / degToRad(300.0);
+        temp = (temp * 100 ~/ (1/16)) / 100;
+        progressController.value = temp;
+        print("$temp-------");
       }
       if((x>center)&&(y<center)){
       double radians =atan((x-center)/(center-y))+degToRad(150);
-      progressController.value=radians/degToRad(300);
+      temp = radians / degToRad(300.0);
+      temp = (temp * 100 ~/ (1/16)) / 100;
+      progressController.value = temp;
+      print("$temp-------");
       }
       if((x>center)&&(y>center)){
       double radians = atan((y-center)/(x-center))+degToRad(240);
-      progressController.value=radians/degToRad(300);
-      double a=radToDeg(radians);
+      temp = radians / degToRad(300.0);
+      temp = (temp * 100 ~/ (1/16)) / 100;
+      progressController.value = temp;
+      print("$temp-------");
       }
       if((x<center)&&(y>center)){
       double radians=degToRad(60)-atan((y-center)/(center-x));
-      progressController.value=radians / degToRad(300);
+      temp = radians / degToRad(300.0);
+      temp = (temp * 100 ~/ (1/16)) / 100;
+      progressController.value = temp;
+      print("$temp-------");
       }
   }
 
@@ -241,7 +254,7 @@ class ProgressPainter extends CustomPainter {
     final progressPaint = Paint()
       ..color = Color.fromARGB(255, 0, 0, 255)
       ..strokeWidth = 3;
-    double drawDegree = 300 / 48;
+    double drawDegree = 300 / 48  ;
     int temp = 0;
     while(drawDegree <= 300){
       double a = (start + drawDegree) /180 * pi;
@@ -271,8 +284,8 @@ class ProgressPainter extends CustomPainter {
       );
       print('-----------$sweep1');
        */
-
       drawDegree += (300 / (48 - 1));
+
     }
 
     /*

@@ -3,16 +3,13 @@ import 'dart:io';
 class SocketUtil {
 
   SocketUtil _socketUtil;
+  Socket socketThis;
+  final String ip;
+  final int port;
+  SocketUtil(this.ip, this.port);
 
-  SocketUtil();
 
-  SocketUtil getInstance() {
-    if (_socketUtil == null)
-      _socketUtil = new SocketUtil();
-    return _socketUtil;
-  }
-
-  Future<Socket> connect(String ip, int port, String val) {
+  Future<Socket> connect(String ip, int port) {
     return Socket.connect(ip, port);
   }
 
@@ -31,6 +28,12 @@ class SocketUtil {
     });
     return list;
   }
+
+  void send(String val){
+    Future<Socket> f =connect(ip, port);
+    writeMassage(val, f);
+  }
+
 
   void closeSocket(Socket s) {
     s.close();

@@ -3,9 +3,9 @@ import 'package:flutter/src/foundation/diagnostics.dart';
 import 'dart:io';
 import 'package:flutter_myslider/circle_progress_bar.dart';
 import 'package:flutter/rendering.dart' show debugPaintSizeEnabled;
+import 'package:flutter_myslider/socketutil.dart';
 
 void main() {
-  //SocketUtil socketUtil=new SocketUtil();
   debugPaintSizeEnabled = false;
   runApp(MyApp());
   
@@ -28,6 +28,7 @@ class MyApp extends StatelessWidget {
 
 class ProgressBarPage extends StatefulWidget {
 
+
   @override
   State<StatefulWidget> createState() => ProgressBarState();
 }
@@ -36,7 +37,7 @@ class ProgressBarPage extends StatefulWidget {
 class ProgressBarState extends State<ProgressBarPage>{
   double progress = 0.0;
   String but;
-
+  var isCold=true;
 
   void _iconButtonPressRediusTemperature(){//减少温度
 
@@ -47,6 +48,8 @@ class ProgressBarState extends State<ProgressBarPage>{
     });
 
   }
+  SocketUtil socketUtil=new SocketUtil("172.16.0.119", 8089);
+
   void _iconButtonPressAddTemperature(){//增加温度
     if(progress <= 1)
       progress +=1/48;
@@ -56,9 +59,13 @@ class ProgressBarState extends State<ProgressBarPage>{
     print('button2 pressed-----');
   }
   void _iconButtonPressSetCold(){
+    setState(() {
+      isCold = !isCold;
+    });
     print('button3 pressed-----');
   }
   void _iconButtonPressSetAuto(){
+    socketUtil.send("1236789000");
     print('button3 pressed-----');
   }
   void _iconButtonPressSetHot(){
@@ -85,6 +92,7 @@ class ProgressBarState extends State<ProgressBarPage>{
   Widget build(BuildContext context) {
     print(" progressBarState  build--$progress");
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text('CircleProgressBar'),
       ),
@@ -110,7 +118,7 @@ class ProgressBarState extends State<ProgressBarPage>{
                     margin: EdgeInsets.fromLTRB(10, 10, 10, 10),
                     child: new Column(
                       children: <Widget>[
-                        Icon(Icons.ac_unit,color: Colors.blue,),
+                        Icon(Icons.ac_unit,color: isCold? Colors.red:Colors.blue,),
                       ],
                     ),
                   ),
@@ -118,7 +126,7 @@ class ProgressBarState extends State<ProgressBarPage>{
                     margin: EdgeInsets.fromLTRB(10, 10, 10, 10),
                     child: new Column(
                       children: <Widget>[
-                        Text("COLD",style: TextStyle(fontSize: 20),),
+                        Text(isCold? "COLD":"HOT",style: TextStyle(fontSize: 20),),
                       ],
                     ),
                   ),
@@ -192,9 +200,10 @@ class ProgressBarState extends State<ProgressBarPage>{
                      margin: EdgeInsets.fromLTRB(20, 10, 20, 10),
                      child: RaisedButton(
                        onPressed: _iconButtonPressSetCold,
-                       child: Icon(Icons.ac_unit),
-                       highlightColor: Colors.red,
-                       splashColor: Colors.red,
+                       child: Icon(Icons.ac_unit,color: isCold? Colors.red:Colors.blue,),
+
+                       highlightColor: isCold? Colors.blue:Colors.red,
+                       splashColor: isCold? Colors.blue:Colors.red,
                        elevation: 10,
                      ),
                    ),
@@ -297,71 +306,6 @@ class ProgressBarState extends State<ProgressBarPage>{
     );
   }
 
-  @override
-  StatefulElement createElement() {
-    // TODO: implement createElement
-    return null;
-  }
-
-  @override
-  State<StatefulWidget> createState() {
-    // TODO: implement createState
-    return null;
-  }
-
-  @override
-  List<DiagnosticsNode> debugDescribeChildren() {
-    // TODO: implement debugDescribeChildren
-    return null;
-  }
-
-  @override
-  // TODO: implement dotColor
-  Color get dotColor => null;
-
-  @override
-  // TODO: implement dotEdgeColor
-  Color get dotEdgeColor => null;
-
-  @override
-  // TODO: implement dotRadius
-  double get dotRadius => null;
-
-  @override
-  // TODO: implement key
-  Key get key => null;
-
-  @override
-  // TODO: implement progressChanged
-  get progressChanged => null;
-
-  @override
-  // TODO: implement radius
-  double get radius => null;
-
-  @override
-  // TODO: implement ringColor
-  Color get ringColor => null;
-
-  @override
-  // TODO: implement shadowColor
-  Color get shadowColor => null;
-
-  @override
-  // TODO: implement shadowWidth
-  double get shadowWidth => null;
-
-  @override
-  String toStringDeep({String prefixLineOne = '', String prefixOtherLines, DiagnosticLevel minLevel = DiagnosticLevel.debug}) {
-    // TODO: implement toStringDeep
-    return null;
-  }
-
-  @override
-  String toStringShallow({String joiner = ', ', DiagnosticLevel minLevel = DiagnosticLevel.debug}) {
-    // TODO: implement toStringShallow
-    return null;
-  }
 
 
 
